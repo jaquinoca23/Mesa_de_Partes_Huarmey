@@ -1,0 +1,312 @@
+/* Estilos del formulario de presentación: campos, errores, archivos y resultado. */
+
+:root {
+  --color-error: #b42318; /* rojo con buen contraste sobre blanco */
+  --color-error-bg: #fef3f2;
+}
+
+.container--form {
+  max-width: 760px;
+}
+.page-title {
+  font-size: 1.75rem;
+  color: var(--color-primary);
+}
+.page-lead {
+  color: var(--color-text-muted);
+  margin-bottom: 1.25rem;
+}
+
+/* ---------- Secciones del formulario ---------- */
+.form-section {
+  margin-bottom: 1.25rem;
+}
+.form-section__title {
+  font-size: 1.15rem;
+  padding-bottom: 0.6rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.form-grid {
+  display: grid;
+  gap: 0 1rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---------- Campos ---------- */
+.field {
+  margin-bottom: 1rem;
+}
+.field__label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.field__required {
+  color: var(--color-error);
+}
+.field__optional {
+  font-weight: 400;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+.field__hint {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin: 0 0 0.35rem;
+}
+.field__control {
+  display: block;
+  width: 100%;
+  min-height: 44px; /* tamaño cómodo para tocar en celulares */
+  padding: 0.55rem 0.75rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--color-text);
+  background: var(--color-white);
+  border: 1px solid #8a94a3;
+  border-radius: 8px;
+}
+textarea.field__control {
+  resize: vertical;
+  min-height: 120px;
+}
+.field__control:hover {
+  border-color: var(--color-text);
+}
+.field--error .field__control {
+  border-color: var(--color-error);
+  border-width: 2px;
+}
+.field__error {
+  color: var(--color-error);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0.35rem 0 0;
+}
+
+/* ---------- Tipo de solicitante (botones de opción) ---------- */
+.radio-group {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1rem;
+  min-width: 0;
+}
+.radio-group legend {
+  padding: 0;
+}
+.radio-group__opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+.radio input,
+.check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* ---------- Casillas de declaración ---------- */
+.check {
+  margin-bottom: 0.75rem;
+}
+.check__fila {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.check__fila label {
+  cursor: pointer;
+}
+.check__nota {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+.check--error .check__fila {
+  outline: 2px solid var(--color-error);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* ---------- Archivos adjuntos ---------- */
+.file-input {
+  display: block;
+  width: 100%;
+  padding: 0.6rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: var(--color-bg);
+  border: 2px dashed #8a94a3;
+  border-radius: 8px;
+}
+.file-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+}
+.file-list__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  margin-bottom: 0.4rem;
+  background: var(--color-white);
+}
+.file-list__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-list__size {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.file-errors {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-white);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.icon-btn:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+/* ---------- Resumen de errores ---------- */
+.error-summary {
+  background: var(--color-error-bg);
+  border: 2px solid var(--color-error);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.error-summary__title {
+  font-size: 1.05rem;
+  color: var(--color-error);
+}
+.error-summary ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+.error-summary a {
+  font-weight: 600;
+}
+
+/* ---------- Botones del formulario ---------- */
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+@media (min-width: 640px) {
+  .form-actions {
+    flex-direction: row;
+  }
+}
+.btn--secondary {
+  background: var(--color-white);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.btn--secondary:hover {
+  background: var(--color-primary-soft);
+}
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.spin {
+  animation: girar 1s linear infinite;
+}
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Avisos y estados ---------- */
+.notice--compact {
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+}
+.notice--compact p {
+  margin: 0;
+}
+.notice--error {
+  border-left-color: var(--color-error);
+  background: var(--color-error-bg);
+}
+.notice--error .notice__icon,
+.notice--error .notice__title {
+  color: var(--color-error);
+}
+.state-msg {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+/* ---------- Pantalla de resultado ---------- */
+.result {
+  text-align: left;
+}
+.result__icon {
+  color: #067647;
+}
+.result__title {
+  font-size: 1.4rem;
+}
+.result__datos {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--color-bg);
+  border-radius: 8px;
+}
+.result__datos dt {
+  font-weight: 600;
+}
+.result__datos dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.result__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.dni-verificar { margin: 4px 0 12px; }
+.dni-verificar p { margin: 6px 0 0; }

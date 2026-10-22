@@ -1,0 +1,22 @@
+/* Variables de diseño. Cambiar un color aquí lo cambia en toda la aplicación. */
+:root {
+  /* Paleta provisional (podrá ajustarse con la imagen de referencia) */
+  --color-primary: #6e1d2a; /* Guinda institucional */
+  --color-primary-dark: #561520;
+  --color-primary-soft: #f6e9ec; /* Guinda muy claro para fondos de iconos */
+  --color-white: #ffffff;
+  --color-bg: #f4f5f7;
+  --color-text: #263244;
+  --color-text-muted: #5b6678;
+  --color-border: #d9dde3;
+  --color-focus: #1d4ed8;
+
+  /* Tipografía */
+  --font-family: 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Espaciado y formas */
+  --radius: 10px;
+  --shadow-sm: 0 1px 2px rgba(38, 50, 68, 0.08);
+  --shadow-md: 0 4px 14px rgba(38, 50, 68, 0.1);
+  --container-width: 1080px;
+}

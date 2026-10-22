@@ -1,0 +1,34 @@
+# Dependencias
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Compilados
+frontend/dist/
+
+# Secretos y configuración local (NUNCA subir a GitHub)
+.env
+*.env.local
+
+# Base de datos local de pruebas
+*.sqlite3
+
+# Archivos subidos por usuarios (se usarán desde la ETAPA 4)
+media/
+
+# Sistema y editor
+.DS_Store
+Thumbs.db
+.vscode/
+*.log
+
+# Adjuntos privados (ETAPA 5)
+backend/storage_privado/
+storage_privado/
+
+# Respaldos (contienen datos personales)
+backups/
+*.dump
+infra/.env

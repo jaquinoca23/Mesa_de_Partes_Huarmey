@@ -1,0 +1,11 @@
+LOGO OFICIAL (pendiente)
+========================
+Cuando tengas el archivo oficial del logo, guárdalo en esta carpeta con
+este nombre exacto:
+
+    logo-huarmey.png
+
+El componente BrandHeader lo detectará automáticamente y reemplazará el
+espacio reservado. No hace falta tocar el código.
+
+No se debe redibujar ni modificar el logo oficial.

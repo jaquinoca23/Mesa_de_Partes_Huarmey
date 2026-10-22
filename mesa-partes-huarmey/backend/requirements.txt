@@ -1,0 +1,9 @@
+# Dependencias del backend.
+# Django 5.2 es versión LTS (soporte extendido) y funciona con Python 3.10 a 3.13.
+Django>=5.2,<5.3
+djangorestframework>=3.16,<3.17
+django-cors-headers>=4.7,<5.0
+python-dotenv>=1.0,<2.0
+
+# Conector de Django con PostgreSQL (ETAPA 3). "binary" incluye lo necesario en Windows.
+psycopg[binary]>=3.2,<4.0
