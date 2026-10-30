@@ -42,7 +42,7 @@ def _estado_inicial():
     return estado
 
 
-def _crear(datos, archivos, estado_inicial):
+def _crear(datos, archivos, estado_inicial, usuario=None):
     """Crea todo en UNA transacción: o se guarda todo, o no se guarda nada."""
     with transaction.atomic():
         persona_datos = {
@@ -69,12 +69,15 @@ def _crear(datos, archivos, estado_inicial):
             descripcion=datos.get('descripcion', ''),
             email_contacto=datos['email'],
             telefono_contacto=datos.get('telefono', ''),
+            area_actual=usuario.area if usuario else None,
         )
         HistorialEstado.objects.create(
             expediente=expediente,
             estado_anterior=None,
             estado_nuevo=estado_inicial,
-            observacion='Solicitud recibida por la Mesa de Partes Digital.',
+            usuario=usuario,
+            observacion=('Documento recibido en mesa de partes física y digitalizado por el personal.'
+                         if usuario else 'Solicitud recibida por la Mesa de Partes Digital.'),
         )
         for archivo in archivos:
             guardar_adjunto(expediente, archivo)
