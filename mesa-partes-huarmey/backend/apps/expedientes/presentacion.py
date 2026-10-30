@@ -66,6 +66,7 @@ def a_detalle(expediente, usuario):
             {
                 'id': a.pk,
                 'nombre': a.nombre_original,
+                'es_principal': a.es_principal,
                 'extension': a.extension,
                 'tamano': a.tamano,
                 'sha256': a.sha256,

@@ -11,6 +11,7 @@ APPS_ADMINISTRADOR = ('expedientes', 'organizacion', 'usuarios', 'catalogos', 'a
 ROLES = {
     'Administrador': None,  # None = todos los permisos de APPS_ADMINISTRADOR
     'Mesa de partes': [
+        'expedientes.add_expediente',
         'expedientes.view_expediente',
         'expedientes.ver_todos_expedientes',
         'expedientes.cambiar_estado_expediente',

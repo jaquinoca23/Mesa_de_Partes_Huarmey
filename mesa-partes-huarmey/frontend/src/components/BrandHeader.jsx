@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Landmark } from 'lucide-react';
+import { Landmark, LogIn } from 'lucide-react';
 
 // Ruta donde se colocará el logo oficial (carpeta frontend/public/images/).
 const LOGO_URL = '/images/logo-huarmey.png';
@@ -44,9 +44,15 @@ export default function BrandHeader() {
           </div>
         </Link>
 
-        <span className="badge badge--demo" title="Versión de demostración con datos ficticios">
-          Demostración
-        </span>
+        <div className="brand-header__actions">
+          <span className="badge badge--demo" title="Versión de demostración con datos ficticios">
+            Demostración
+          </span>
+          <Link to="/panel/login" className="brand-header__staff">
+            <LogIn size={18} aria-hidden="true" />
+            Acceso al personal
+          </Link>
+        </div>
       </div>
     </header>
   );
