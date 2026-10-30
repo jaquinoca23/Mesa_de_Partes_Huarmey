@@ -9,6 +9,7 @@ import CargoPage from '../pages/citizen/CargoPage.jsx';
 import NotFoundPage from '../pages/citizen/NotFoundPage.jsx';
 import LoginPage from '../pages/admin/LoginPage.jsx';
 import InicioPanelPage from '../pages/admin/InicioPanelPage.jsx';
+import RegistrarDocumentoPage from '../pages/admin/RegistrarDocumentoPage.jsx';
 import BandejaPage from '../pages/admin/BandejaPage.jsx';
 import ExpedienteDetallePage from '../pages/admin/ExpedienteDetallePage.jsx';
 import ReportesPage from '../pages/admin/ReportesPage.jsx';
@@ -34,6 +35,9 @@ export default function AppRoutes() {
       <Route path="/panel" element={<RutaProtegida />}>
         <Route element={<AdminLayout />}>
           <Route index element={<InicioPanelPage />} />
+          <Route element={<RutaProtegida permiso="expedientes.add_expediente" />}>
+            <Route path="registrar-documento" element={<RegistrarDocumentoPage />} />
+          </Route>
           <Route element={<RutaProtegida permiso="expedientes.view_expediente" />}>
             <Route path="expedientes" element={<BandejaPage />} />
             <Route path="expedientes/:uuid" element={<ExpedienteDetallePage />} />

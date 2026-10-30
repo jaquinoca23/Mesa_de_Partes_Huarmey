@@ -5,6 +5,7 @@ from rest_framework.routers import SimpleRouter
 from apps.catalogos.views_panel import EstadoViewSet, TipoDocumentalViewSet
 from apps.organizacion.views_panel import AreaViewSet
 from apps.expedientes import views_panel as exp
+from apps.expedientes.views_registro_presencial import RegistroPresencialView
 from apps.expedientes import views_reportes as rep
 from apps.usuarios.views_panel import RolesView, UsuarioViewSet
 
@@ -17,6 +18,7 @@ router.register('estados', EstadoViewSet, basename='panel-estados')
 urlpatterns = [
     path('roles/', RolesView.as_view(), name='panel-roles'),
     path('expedientes/', exp.BandejaView.as_view(), name='panel-bandeja'),
+    path('expedientes/registrar/', RegistroPresencialView.as_view(), name='panel-exp-registrar'),
     path('expedientes/opciones/', exp.OpcionesView.as_view(), name='panel-exp-opciones'),
     path('expedientes/<uuid:uuid>/', exp.DetalleView.as_view(), name='panel-exp-detalle'),
     path('expedientes/<uuid:uuid>/cambiar-estado/', exp.CambiarEstadoView.as_view(), name='panel-exp-estado'),

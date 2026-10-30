@@ -22,6 +22,7 @@ class Adjunto(models.Model):
     expediente = models.ForeignKey('expedientes.Expediente', on_delete=models.PROTECT, related_name='adjuntos')
     archivo = models.FileField(upload_to=ruta_adjunto, storage=almacenamiento_privado, max_length=200)
     nombre_original = models.CharField(max_length=150)
+    es_principal = models.BooleanField(default=False)
     extension = models.CharField(max_length=10)
     tamano = models.PositiveIntegerField(help_text='Tamaño en bytes.')
     sha256 = models.CharField(max_length=64, help_text='Huella del contenido, para verificar que no cambió.')

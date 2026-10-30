@@ -144,7 +144,7 @@ export default function ExpedienteDetallePage() {
           {d.adjuntos.map((a) => (
             <li key={a.id}>
               <a href={`/api/panel/adjuntos/${a.id}/descargar/`} download>
-                <Download size={14} aria-hidden="true" /> {a.nombre}
+                <Download size={14} aria-hidden="true" /> {a.nombre}{a.es_principal && ' · Documento principal'}
               </a>{' '}
               ({formatearTamano(a.tamano)}) <small>SHA-256: {a.sha256.slice(0, 12)}…</small>
             </li>
@@ -217,7 +217,7 @@ export default function ExpedienteDetallePage() {
                 <tr key={x.id}>
                   <td>{x.origen}</td>
                   <td>{x.destino}</td>
-                  <td>{x.motivo}</td>
+                  <td>{x.motivo}{x.observaciones && <><br /><small>Mensaje: {x.observaciones}</small></>}</td>
                   <td>{x.remitente}<br /><small>{formatearFecha(x.fecha)}</small></td>
                   <td>{x.estado}{x.recibido_por && <><br /><small>{x.recibido_por} · {formatearFecha(x.fecha_recepcion)}</small></>}</td>
                 </tr>

@@ -1,11 +1,4 @@
-# PostgreSQL para desarrollo con Docker (OPCIONAL; solo la base de datos).
-# Django y React se siguen ejecutando como hasta ahora, sin Docker.
-#
-# Uso:
-#   1. Copia infra/.env.example como infra/.env y escribe una contraseña propia.
-#   2. En backend/.env pon DB_HOST=localhost, DB_PORT=5433 y la MISMA contraseña.
-#   3. docker compose --env-file infra/.env -f infra/docker-compose.yml up -d
-#   4. Detener: docker compose -f infra/docker-compose.yml down   (los datos se conservan en el volumen)
+
 services:
   db:
     image: postgres:17

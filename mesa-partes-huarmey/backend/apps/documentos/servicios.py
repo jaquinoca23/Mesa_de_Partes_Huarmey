@@ -44,5 +44,9 @@ def guardar_adjunto(expediente, archivo_subido):
         sha256=hashlib.sha256(contenido).hexdigest(),
     )
     adjunto.archivo.save(archivo_subido.name, ContentFile(contenido), save=False)
-    adjunto.save()
+    try:
+        adjunto.save()
+    except Exception:
+        adjunto.archivo.delete(save=False)
+        raise
     return adjunto

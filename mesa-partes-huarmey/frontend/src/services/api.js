@@ -159,6 +159,7 @@ function enviarJson(ruta, metodo, cuerpo) {
 }
 
 export const api = {
+  postForm: (ruta, cuerpo) => solicitar(ruta, { method: 'POST', body: cuerpo }),
   get: (ruta) => solicitar(ruta),
   post: (ruta, cuerpo) => enviarJson(ruta, 'POST', cuerpo),
   patch: (ruta, cuerpo) => enviarJson(ruta, 'PATCH', cuerpo),
