@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { ClipboardList, Building2, FileText, FilePlus2, ScrollText, Home, Inbox, ListChecks, LogOut, Users } from 'lucide-react';
+import { ClipboardList, Building2, FileText, FilePlus2, ScrollText, Home, Inbox, ListChecks, LogOut, Users, ChevronRight, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 
 // Cada opción del menú aparece solo si el usuario tiene el permiso de "ver" esa sección.
@@ -27,17 +27,19 @@ export default function AdminLayout() {
   return (
     <div className="admin">
       <aside className="admin__menu">
-        <div className="admin__marca"><img src="/images/logo-huarmey.png" alt="" /><span>Municipalidad de Huarmey<strong>Mesa de Partes</strong></span></div>
-        <p className="admin__menu-label">ESPACIO DE TRABAJO</p>
+        <div className="admin__marca"><span className="admin__escudo"><img src="/images/logo-huarmey.png" alt="" /></span><span>Municipalidad de Huarmey<strong>Mesa de Partes</strong><small>GESTIÓN DOCUMENTAL</small></span></div>
+        <div className="admin__portal"><ShieldCheck size={14} aria-hidden="true" /> Portal del personal</div>
+        <p className="admin__menu-label">PRINCIPAL</p>
         <nav aria-label="Menú del panel">
           {MENU.filter((m) => !m.permiso || tiene(m.permiso)).map(({ a, texto, icono: Icono, fin }) => (
             <NavLink key={a} to={a} end={fin} className="admin__enlace">
-              <Icono size={18} aria-hidden="true" />
-              {texto}
+              <span className="admin__nav-icono"><Icono size={18} aria-hidden="true" /></span>
+              <span className="admin__nav-texto">{texto}</span>
+              <ChevronRight className="admin__nav-flecha" size={15} aria-hidden="true" />
             </NavLink>
           ))}
         </nav>
-        <div className="admin__menu-pie"><span className="admin__punto" /> Portal del personal<span>Gestión documental</span></div>
+        <div className="admin__usuario-pie"><div className="admin__usuario-tarjeta"><span className="admin__usuario-avatar" aria-hidden="true">{usuario.nombre.trim().split(/\s+/).slice(0, 2).map((n) => n[0]).join('')}</span><span className="admin__usuario-datos"><strong>{usuario.nombre}</strong><small>{usuario.roles.join(', ') || 'Personal municipal'}</small></span></div><div className="admin__institucion-pie"><Building2 size={13} aria-hidden="true" /> Municipalidad de Huarmey</div></div>
       </aside>
       <div className="admin__cuerpo">
         <header className="admin__barra">

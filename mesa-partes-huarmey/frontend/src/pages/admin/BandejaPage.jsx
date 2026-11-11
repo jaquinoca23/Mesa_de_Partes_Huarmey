@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, SlidersHorizontal, Inbox, ArrowUpRight, ChevronLeft, ChevronRight, RotateCcw, FilePlus2, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext.jsx';
 import FormField from '../../components/FormField.jsx';
 import { api } from '../../services/api.js';
 import useCarga from '../../hooks/useCarga.js';
@@ -20,6 +21,7 @@ function aConsulta(filtros, pagina) {
 
 // Bandeja: lista de expedientes que el usuario puede ver (el servidor aplica la regla por área).
 export default function BandejaPage() {
+  const { tiene } = useAuth();
   const opciones = useCarga(useCallback(() => api.get('/panel/expedientes/opciones/'), []));
   const [formulario, setFormulario] = useState(FILTROS_VACIOS);
   const [filtros, setFiltros] = useState(FILTROS_VACIOS);
@@ -48,15 +50,19 @@ export default function BandejaPage() {
   const total = lista.datos ? lista.datos.count : 0;
   const hayAnterior = lista.datos && lista.datos.previous;
   const haySiguiente = lista.datos && lista.datos.next;
+  const filtrosActivos = Object.values(filtros).filter(Boolean).length;
 
   return (
-    <section>
-      <h1 className="page-title">Bandeja de expedientes</h1>
-      <p className="state-msg">Solo ves los expedientes de tu área, o todos si tu rol lo permite.</p>
+    <section className="bandeja">
+      <header className="bandeja__encabezado">
+        <div><span className="panel-eyebrow">GESTIÓN DOCUMENTAL</span><h1>Bandeja de expedientes</h1><p>Consulta, encuentra y da seguimiento a tus documentos.</p></div>
+        {tiene('expedientes.add_expediente') && <Link className="btn btn--primary" to="/panel/registrar-documento"><FilePlus2 size={18} aria-hidden="true" /> Registrar documento</Link>}
+      </header>
 
-      <form onSubmit={buscar} className="card form-section" aria-label="Filtros">
+      <form onSubmit={buscar} className="card form-section bandeja__filtros" aria-label="Filtros">
+        <div className="bandeja__filtros-titulo"><h2><SlidersHorizontal size={17} aria-hidden="true" /> Buscar y filtrar</h2><span>Combina los filtros para encontrar un expediente</span></div>
         <div className="form-grid">
-          <FormField id="q" label="Buscar" hint="Número, asunto o solicitante" value={formulario.q} onChange={cambiar} maxLength={100} />
+          <FormField id="q" label="Buscar expediente" placeholder="Número, asunto o solicitante…" value={formulario.q} onChange={cambiar} maxLength={100} />
           <FormField id="estado" as="select" label="Estado" value={formulario.estado} onChange={cambiar}>
             <option value="">Todos</option>
             {op && op.estados.map((e) => <option key={e.valor} value={e.valor}>{e.etiqueta}</option>)}
@@ -74,7 +80,7 @@ export default function BandejaPage() {
           <FormField id="desde" type="date" label="Recibido desde" value={formulario.desde} onChange={cambiar} />
           <FormField id="hasta" type="date" label="Recibido hasta" value={formulario.hasta} onChange={cambiar} />
         </div>
-        <div className="check">
+        <div className="bandeja__filtros-pie"><div className="check">
           <div className="check__fila">
             <input id="pendientes" name="pendientes" type="checkbox" checked={formulario.pendientes} onChange={cambiar} />
             <label htmlFor="pendientes">Solo derivaciones pendientes de recibir por mi área</label>
@@ -82,16 +88,18 @@ export default function BandejaPage() {
         </div>
         <div className="form-actions">
           <button type="submit" className="btn btn--primary"><Search size={18} aria-hidden="true" /> Buscar</button>
-          <button type="button" className="btn btn--secondary" onClick={limpiar}>Limpiar</button>
-        </div>
+          <button type="button" className="btn btn--secondary" onClick={limpiar}><RotateCcw size={15} aria-hidden="true" /> Limpiar</button>
+        </div></div>
       </form>
+      {opciones.error && <p className="field__error" role="alert">No se pudieron cargar las opciones de los filtros. {opciones.error}</p>}
 
       {lista.cargando && <p className="state-msg" role="status">Cargando…</p>}
       {lista.error && <p className="field__error" role="alert">{lista.error}</p>}
       {lista.datos && (
         <>
-          <p className="state-msg" role="status">{total} expediente(s) encontrado(s).</p>
-          <div className="tabla-envoltura">
+          <div className="bandeja__resultados">
+          <div className="bandeja__resultados-cabecera"><div><h2><Inbox size={19} aria-hidden="true" /> Expedientes <span className="bandeja__contador">{total}</span></h2><p role="status">{lista.cargando ? 'Actualizando resultados…' : `${total} ${total === 1 ? 'expediente encontrado' : 'expedientes encontrados'}`}{filtrosActivos > 0 && ` · ${filtrosActivos} ${filtrosActivos === 1 ? 'filtro aplicado' : 'filtros aplicados'}`}</p></div><span className="bandeja__alcance"><ShieldCheck size={14} aria-hidden="true" /> Según tus permisos de acceso</span></div>
+          <div className="tabla-envoltura" tabIndex={0} role="region" aria-label="Resultados de expedientes" aria-busy={lista.cargando}>
             <table className="tabla">
               <thead>
                 <tr>
@@ -100,38 +108,39 @@ export default function BandejaPage() {
                   <th scope="col">Tipo</th>
                   <th scope="col">Estado</th>
                   <th scope="col">Área actual</th>
-                  <th scope="col">Recibido</th>
+                  <th scope="col">Fecha de recepción</th>
+                  <th scope="col"><span className="bandeja__sr">Abrir expediente</span></th>
                 </tr>
               </thead>
               <tbody>
                 {lista.datos.results.length === 0 && (
-                  <tr><td colSpan={6}>No hay expedientes con esos filtros.</td></tr>
+                  <tr><td colSpan={7}><div className="bandeja__vacia"><Search size={30} aria-hidden="true" /><strong>No encontramos expedientes</strong><p>Prueba con otro término o limpia los filtros para ampliar la búsqueda.</p><button type="button" className="btn btn--secondary" onClick={limpiar}>Limpiar filtros</button></div></td></tr>
                 )}
                 {lista.datos.results.map((e) => (
                   <tr key={e.uuid}>
-                    <td><Link to={`/panel/expedientes/${e.uuid}`}>{e.numero}</Link></td>
-                    <td>
-                      {e.asunto}
-                      <br /><small>{e.solicitante}</small>
+                    <td><Link className="bandeja__numero" to={`/panel/expedientes/${e.uuid}`}>{e.numero}</Link></td>
+                    <td className="bandeja__asunto">
+                      <Link to={`/panel/expedientes/${e.uuid}`}>{e.asunto}</Link>
+                      <small>{e.solicitante}</small>
                     </td>
                     <td>{e.tipo_documental}</td>
                     <td>
-                      {e.estado}
+                      <span className="bandeja__estado"><span aria-hidden="true" />{e.estado}</span>
                       {e.por_recibir && <span className="etiqueta etiqueta--alerta">Por recibir</span>}
                       {e.derivacion_pendiente && !e.por_recibir && <span className="etiqueta">Derivación pendiente</span>}
                     </td>
                     <td>{e.area_actual || 'Mesa de partes'}</td>
-                    <td>{formatearFecha(e.fecha_recepcion)}</td>
+                    <td className="bandeja__fecha">{formatearFecha(e.fecha_recepcion)}</td>
+                    <td><Link className="bandeja__abrir" to={`/panel/expedientes/${e.uuid}`} aria-label={`Abrir expediente ${e.numero}`}><ArrowUpRight size={18} aria-hidden="true" /></Link></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="form-actions">
-            <button type="button" className="btn btn--secondary" disabled={!hayAnterior} onClick={() => setPagina((n) => n - 1)}>Anterior</button>
-            <span>Página {pagina}</span>
-            <button type="button" className="btn btn--secondary" disabled={!haySiguiente} onClick={() => setPagina((n) => n + 1)}>Siguiente</button>
-          </div>
+          <nav className="bandeja__paginacion" aria-label="Paginación de expedientes"><span>Página <strong>{pagina}</strong></span><div>
+            <button type="button" className="btn btn--secondary" disabled={!hayAnterior || lista.cargando} onClick={() => setPagina((n) => n - 1)}><ChevronLeft size={16} aria-hidden="true" /> Anterior</button>
+            <button type="button" className="btn btn--secondary" disabled={!haySiguiente || lista.cargando} onClick={() => setPagina((n) => n + 1)}>Siguiente <ChevronRight size={16} aria-hidden="true" /></button>
+          </div></nav></div>
         </>
       )}
     </section>
