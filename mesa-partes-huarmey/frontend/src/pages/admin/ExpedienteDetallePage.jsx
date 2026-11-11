@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Download, Inbox } from 'lucide-react';
+import { ArrowLeft, Download, Inbox, Eye, FileText } from 'lucide-react';
 import FormField from '../../components/FormField.jsx';
 import { ApiError, api } from '../../services/api.js';
 import useCarga from '../../hooks/useCarga.js';
@@ -140,13 +140,15 @@ export default function ExpedienteDetallePage() {
 
       <h2 className="form-section__subtitle">Documentos adjuntos</h2>
       {d.adjuntos.length === 0 ? <p>Sin adjuntos.</p> : (
-        <ul>
+        <ul className="expediente-adjuntos">
           {d.adjuntos.map((a) => (
-            <li key={a.id}>
-              <a href={`/api/panel/adjuntos/${a.id}/descargar/`} download>
-                <Download size={14} aria-hidden="true" /> {a.nombre}{a.es_principal && ' · Documento principal'}
-              </a>{' '}
-              ({formatearTamano(a.tamano)}) <small>SHA-256: {a.sha256.slice(0, 12)}…</small>
+            <li className="expediente-adjunto" key={a.id}>
+              <span className="expediente-adjunto__icono"><FileText size={24} aria-hidden="true" /></span>
+              <div className="expediente-adjunto__datos"><strong>{a.nombre}</strong><small>{formatearTamano(a.tamano)}{a.es_principal && ' · Documento principal'}</small></div>
+              <div className="expediente-adjunto__acciones">
+                {['pdf', 'jpg', 'jpeg', 'png'].includes(a.extension?.toLowerCase()) && <a className="btn btn--primary" href={`/api/panel/adjuntos/${a.id}/descargar/?visualizar=1`} target="_blank" rel="noopener noreferrer" aria-label={`Visualizar documento: ${a.nombre} (nueva pestaña)`}><Eye size={17} aria-hidden="true" /> Visualizar documento</a>}
+                <a className="btn btn--secondary" href={`/api/panel/adjuntos/${a.id}/descargar/`} download aria-label={`Descargar ${a.nombre}`}><Download size={16} aria-hidden="true" /> Descargar</a>
+              </div>
             </li>
           ))}
         </ul>

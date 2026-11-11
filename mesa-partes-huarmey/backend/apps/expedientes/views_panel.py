@@ -232,7 +232,10 @@ class DescargarAdjuntoView(APIView):
             raise Http404
         registrar(request, RegistroAuditoria.Accion.ADJUNTO_DESCARGADO, adjunto, f'Expediente {adjunto.expediente.numero}')
         nombre = re.sub(r'[^A-Za-z0-9._ -]', '_', adjunto.nombre_original) or 'adjunto'
-        respuesta = FileResponse(archivo, as_attachment=True, filename=nombre, content_type='application/octet-stream')
+        tipos_visuales = {'pdf': 'application/pdf', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png'}
+        visualizar = request.query_params.get('visualizar') == '1'
+        tipo = tipos_visuales.get(adjunto.extension.lower()) if visualizar else None
+        respuesta = FileResponse(archivo, as_attachment=not bool(tipo), filename=nombre, content_type=tipo or 'application/octet-stream')
         respuesta['X-Content-Type-Options'] = 'nosniff'
         respuesta['Cache-Control'] = 'private, no-store'
         return respuesta

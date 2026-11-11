@@ -46,7 +46,7 @@ export default function FormField({
         aria-describedby={describedBy}
         {...resto}
       >
-        {children}
+        {Control === 'input' ? undefined : children}
       </Control>
       {error && (
         <p id={idError} className="field__error">

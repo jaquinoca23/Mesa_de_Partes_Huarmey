@@ -216,6 +216,25 @@ class AdjuntosTests(BasePanel):
         self.assertIn(APIClient().get(self.url_descarga).status_code, (401, 403))
         self.assertEqual(sesion('area2.demo').get(self.url_descarga).status_code, 404)
 
+    def test_visualizar_pdf_y_respetar_permisos(self):
+        url = self.url_descarga + '?visualizar=1'
+        r = sesion('mesa.demo').get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r['Content-Type'], 'application/pdf')
+        self.assertIn('inline', r['Content-Disposition'])
+        self.assertEqual(r['Cache-Control'], 'private, no-store')
+        self.assertEqual(b''.join(r.streaming_content), PDF)
+        self.assertIn(APIClient().get(url).status_code, (401, 403))
+        self.assertEqual(sesion('area2.demo').get(url).status_code, 404)
+
+    def test_formato_sin_vista_previa_se_descarga(self):
+        self.adjunto.extension = 'docx'
+        self.adjunto.save(update_fields=['extension'])
+        r = sesion('mesa.demo').get(self.url_descarga + '?visualizar=1')
+        self.assertEqual(r['Content-Type'], 'application/octet-stream')
+        self.assertIn('attachment', r['Content-Disposition'])
+        r.close()
+
     def test_detalle_no_expone_rutas_internas(self):
         texto = str(sesion('mesa.demo').get(self.url(self.exp)).json())
         self.assertNotIn(self._carpeta, texto)
