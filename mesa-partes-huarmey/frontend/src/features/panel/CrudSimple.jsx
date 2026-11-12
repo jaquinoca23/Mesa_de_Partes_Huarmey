@@ -143,13 +143,13 @@ export default function CrudSimple({ titulo, endpoint, campos, columnas, permiso
   function celda(columna, fila) {
     const valor = fila[columna.clave];
     if (columna.render) return columna.render(fila);
-    if (typeof valor === 'boolean') return valor ? 'Sí' : 'No';
-    if (Array.isArray(valor)) return valor.join(', ');
+    if (typeof valor === 'boolean') return <span className={`table-status${valor ? ' table-status--yes' : ''}`}><span aria-hidden="true" />{valor ? 'Sí' : 'No'}</span>;
+    if (Array.isArray(valor)) return <span className="table-tags">{valor.map((item) => <span key={item} className="table-tag">{item}</span>)}</span>;
     return valor ?? '—';
   }
 
   return (
-    <section>
+    <section className="catalog-page">
       <div className="admin__encabezado">
         <h1 className="page-title">{titulo}</h1>
         {puedeAgregar && editando === null && (
@@ -262,8 +262,11 @@ export default function CrudSimple({ titulo, endpoint, campos, columnas, permiso
         </div>
       )}
       {lista.datos && (
-        <div className="tabla-envoltura">
+        <div className="catalog-list">
+          <div className="catalog-list__heading"><h2>Listado de registros <span>{lista.datos.length}</span></h2><p>{titulo}</p></div>
+        <div className="tabla-envoltura" role="region" aria-label={titulo} tabIndex={0}>
           <table className="tabla">
+            <caption className="table-sr">{titulo}: {lista.datos.length} registros</caption>
             <thead>
               <tr>
                 {columnas.map((c) => (
@@ -277,7 +280,7 @@ export default function CrudSimple({ titulo, endpoint, campos, columnas, permiso
             <tbody>
               {lista.datos.length === 0 && (
                 <tr>
-                  <td colSpan={columnas.length + 1}>No hay registros.</td>
+                  <td className="table-empty" colSpan={columnas.length + (puedeCambiar ? 1 : 0)}>No hay registros disponibles.</td>
                 </tr>
               )}
               {lista.datos.map((fila) => (
@@ -287,7 +290,7 @@ export default function CrudSimple({ titulo, endpoint, campos, columnas, permiso
                   ))}
                   {puedeCambiar && (
                     <td>
-                      <button type="button" className="btn btn--secondary" onClick={() => abrirEdicion(fila)}>
+                      <button type="button" className="btn btn--secondary table-edit" aria-label={`Editar ${fila.nombre || fila.username || 'registro'}`} onClick={() => abrirEdicion(fila)}>
                         <Pencil size={16} aria-hidden="true" /> Editar
                       </button>
                     </td>
@@ -296,6 +299,8 @@ export default function CrudSimple({ titulo, endpoint, campos, columnas, permiso
               ))}
             </tbody>
           </table>
+        </div>
+          <div className="catalog-list__footer">{lista.datos.length} {lista.datos.length === 1 ? 'registro disponible' : 'registros disponibles'}</div>
         </div>
       )}
     </section>
