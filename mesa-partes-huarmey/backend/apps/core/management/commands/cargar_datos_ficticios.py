@@ -107,7 +107,8 @@ class Command(BaseCommand):
 
         # 3. Áreas (en orden: primero las superiores)
         areas = {}
-        for nombre, tipo, nombre_padre in AREAS:
+        areas_ejemplo = [] if Area.objects.filter(nombre='Municipalidad Provincial de Huarmey', es_ficticia=False).exists() else AREAS
+        for nombre, tipo, nombre_padre in areas_ejemplo:
             area, _ = Area.objects.update_or_create(
                 nombre=nombre,
                 defaults={

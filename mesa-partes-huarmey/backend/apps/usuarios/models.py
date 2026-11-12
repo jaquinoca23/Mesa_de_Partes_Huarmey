@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.validators import RegexValidator
 
 
 class Usuario(AbstractUser):
@@ -23,6 +24,10 @@ class Usuario(AbstractUser):
         help_text='Área a la que pertenece el usuario.',
     )
     cargo = models.CharField(max_length=120, blank=True)
+    dni = models.CharField(
+        max_length=8, unique=True, null=True, blank=True,
+        validators=[RegexValidator(r'^[0-9]{8}$', 'El DNI debe contener exactamente 8 dígitos.')],
+    )
 
     class Meta:
         verbose_name = 'usuario'

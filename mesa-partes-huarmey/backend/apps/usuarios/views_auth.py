@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 
 from apps.auditoria.models import RegistroAuditoria
 from apps.auditoria.servicios import registrar
+from .politica import es_administrador_unico
 
 MENSAJE_LOGIN_INCORRECTO = 'Usuario o contraseña incorrectos.'
 
@@ -24,8 +25,12 @@ def datos_de_sesion(usuario):
         'cargo': usuario.cargo,
         'area': {'id': usuario.area_id, 'nombre': usuario.area.nombre} if usuario.area_id else None,
         'roles': sorted(usuario.groups.values_list('name', flat=True)),
-        'permisos': sorted(usuario.get_all_permissions()),
-        'es_superusuario': usuario.is_superuser,
+        'permisos': sorted(
+            permiso for permiso in usuario.get_all_permissions()
+            if es_administrador_unico(usuario) or not permiso.startswith('usuarios.')
+        ),
+        'es_superusuario': es_administrador_unico(usuario),
+        'puede_gestionar_usuarios': es_administrador_unico(usuario),
     }
 
 

@@ -34,7 +34,10 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const tiene = useCallback((permiso) => Boolean(usuario && (usuario.es_superusuario || usuario.permisos.includes(permiso))), [usuario]);
+  const tiene = useCallback((permiso) => {
+    if (permiso.startsWith('usuarios.') && !usuario?.puede_gestionar_usuarios) return false;
+    return Boolean(usuario && (usuario.es_superusuario || usuario.permisos.includes(permiso)));
+  }, [usuario]);
 
   const valor = useMemo(() => ({ usuario, cargando, entrar, salir, tiene }), [usuario, cargando, entrar, salir, tiene]);
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>;

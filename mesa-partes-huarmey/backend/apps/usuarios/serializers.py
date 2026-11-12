@@ -5,6 +5,7 @@ from rest_framework import serializers
 from apps.core.roles import ROLES
 
 from .models import Usuario
+from .politica import ADMIN_USERNAME
 
 ROL_ADMIN = 'Administrador'
 
@@ -25,7 +26,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario
         fields = [
-            'id', 'username', 'first_name', 'last_name', 'email', 'cargo',
+            'id', 'dni', 'username', 'first_name', 'last_name', 'email', 'cargo',
             'area', 'area_nombre', 'is_active', 'roles', 'password', 'last_login',
         ]
         read_only_fields = ['last_login']
@@ -35,6 +36,8 @@ class UsuarioSerializer(serializers.ModelSerializer):
         return usuario.is_superuser or usuario.groups.filter(name=ROL_ADMIN).exists()
 
     def validate_roles(self, grupos):
+        if any(g.name == ROL_ADMIN for g in grupos):
+            raise serializers.ValidationError('La única cuenta administradora es ADMIN_MPD.')
         # Solo un administrador puede dar (o quitar) el rol de administrador: evita escalar privilegios.
         if not self._es_admin() and any(g.name == ROL_ADMIN for g in grupos):
             raise serializers.ValidationError('No puedes asignar el rol de Administrador.')
@@ -56,6 +59,16 @@ class UsuarioSerializer(serializers.ModelSerializer):
         return valor
 
     def validate(self, datos):
+        if self.instance and self.instance.username == ADMIN_USERNAME:
+            raise serializers.ValidationError('La cuenta ADMIN_MPD se administra mediante el comando configurar_admin_mpd.')
+        if datos.get('username', '').casefold() == ADMIN_USERNAME.casefold():
+            raise serializers.ValidationError({'username': 'Este nombre está reservado para la cuenta administradora.'})
+        if not self.instance and not datos.get('dni'):
+            raise serializers.ValidationError({'dni': 'El DNI es obligatorio al crear un usuario.'})
+        if 'dni' in datos and not datos['dni']:
+            if self.instance and self.instance.dni:
+                raise serializers.ValidationError({'dni': 'No puedes dejar el DNI vacío.'})
+            datos['dni'] = None
         password = datos.get('password')
         if not self.instance and not password:
             raise serializers.ValidationError({'password': 'La contraseña es obligatoria al crear un usuario.'})

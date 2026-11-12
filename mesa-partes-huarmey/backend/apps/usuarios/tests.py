@@ -28,11 +28,18 @@ class BaseUsuarios(TestCase):
     @classmethod
     def setUpTestData(cls):
         call_command('crear_roles_demo', '--password', CLAVE, verbosity=0)
+        administrador = Usuario.objects.get(username='admin.demo')
+        administrador.username = 'ADMIN_MPD'
+        administrador.is_superuser = True
+        administrador.is_staff = True
+        administrador.save()
 
     def setUp(self):
         cache.clear()
 
     def entrar(self, username):
+        if username == 'admin.demo':
+            username = 'ADMIN_MPD'
         cliente = cliente_con_csrf()
         r = cliente.post('/api/auth/login/', {'username': username, 'password': CLAVE}, format='json', **cabecera(cliente))
         self.assertEqual(r.status_code, 200, r.content)
@@ -131,6 +138,7 @@ class PermisosPanelTests(BaseUsuarios):
 class GestionUsuariosTests(BaseUsuarios):
     def crear(self, cliente, **cambios):
         datos = {
+            'dni': '01234567',
             'username': 'nuevo.demo', 'first_name': 'Nuevo', 'last_name': 'Demo', 'email': 'nuevo@example.com',
             'password': CLAVE, 'roles': ['Mesa de partes'], 'is_active': True,
         }
@@ -145,12 +153,39 @@ class GestionUsuariosTests(BaseUsuarios):
         usuario = Usuario.objects.get(username='nuevo.demo')
         self.assertTrue(usuario.check_password(CLAVE))
         self.assertNotEqual(usuario.password, CLAVE)  # guardada con hash
+        self.assertEqual(usuario.dni, '01234567')
         self.assertEqual([g.name for g in usuario.groups.all()], ['Mesa de partes'])
         self.assertTrue(RegistroAuditoria.objects.filter(accion='USUARIO_CREADO').exists())
 
     def test_contrasena_debil_se_rechaza(self):
         cliente = self.entrar('admin.demo')
         self.assertEqual(self.crear(cliente, password='12345678').status_code, 400)
+
+    def test_dni_obligatorio_y_formato(self):
+        cliente = self.entrar('admin.demo')
+        for dni in ['', '123', 'abcdefgh', '123456789']:
+            respuesta = self.crear(cliente, dni=dni)
+            self.assertEqual(respuesta.status_code, 400)
+            self.assertIn('dni', respuesta.json())
+
+    def test_dni_unico(self):
+        cliente = self.entrar('admin.demo')
+        self.assertEqual(self.crear(cliente).status_code, 201)
+        respuesta = self.crear(cliente, username='otro.usuario')
+        self.assertEqual(respuesta.status_code, 400)
+        self.assertIn('dni', respuesta.json())
+
+    def test_mesa_no_puede_crear_usuarios(self):
+        cliente = self.entrar('mesa.demo')
+        self.assertEqual(self.crear(cliente).status_code, 403)
+
+    def test_nuevo_usuario_inicia_sesion_y_puede_registrar(self):
+        cliente = self.entrar('admin.demo')
+        self.assertEqual(self.crear(cliente).status_code, 201)
+        nuevo = self.entrar('nuevo.demo')
+        permisos = nuevo.get('/api/auth/me/').json()['usuario']['permisos']
+        self.assertIn('expedientes.add_expediente', permisos)
+        self.assertNotIn('usuarios.add_usuario', permisos)
 
     def test_contrasena_obligatoria_al_crear(self):
         cliente = self.entrar('admin.demo')
@@ -162,7 +197,7 @@ class GestionUsuariosTests(BaseUsuarios):
 
     def test_no_puede_desactivarse_a_si_mismo(self):
         cliente = self.entrar('admin.demo')
-        yo = Usuario.objects.get(username='admin.demo')
+        yo = Usuario.objects.get(username='ADMIN_MPD')
         r = cliente.patch(f'/api/panel/usuarios/{yo.pk}/', {'is_active': False}, format='json', **cabecera(cliente))
         self.assertEqual(r.status_code, 400)
 
@@ -180,18 +215,38 @@ class GestionUsuariosTests(BaseUsuarios):
         from django.contrib.auth.models import Permission
         grupo.permissions.add(*Permission.objects.filter(content_type__app_label='usuarios', codename__endswith='usuario'))
         cliente = self.entrar('mesa.demo')
-        self.assertEqual(self.crear(cliente, roles=['Administrador']).status_code, 400)
-        nombres = [u['username'] for u in cliente.get('/api/panel/usuarios/').json()]
-        self.assertNotIn('admin.demo', nombres)
-        admin = Usuario.objects.get(username='admin.demo')
+        self.assertEqual(self.crear(cliente, roles=['Administrador']).status_code, 403)
+        self.assertEqual(cliente.get('/api/panel/usuarios/').status_code, 403)
+        self.assertEqual(cliente.get('/api/panel/roles/').status_code, 403)
+        admin = Usuario.objects.get(username='ADMIN_MPD')
         r = cliente.patch(f'/api/panel/usuarios/{admin.pk}/', {'password': CLAVE}, format='json', **cabecera(cliente))
-        self.assertEqual(r.status_code, 404)
+        self.assertEqual(r.status_code, 403)
 
-    def test_superusuario_oculto_para_administrador(self):
+    def test_otro_superusuario_no_puede_gestionar_cuentas(self):
         Usuario.objects.create_superuser('super.demo', 'super@example.com', CLAVE)
+        cliente = self.entrar('super.demo')
+        self.assertEqual(cliente.get('/api/panel/usuarios/').status_code, 403)
+        sesion = cliente.get('/api/auth/me/').json()['usuario']
+        self.assertFalse(sesion['puede_gestionar_usuarios'])
+        self.assertNotIn('usuarios.view_usuario', sesion['permisos'])
+
+    def test_admin_no_puede_crear_otro_administrador(self):
         cliente = self.entrar('admin.demo')
-        nombres = [u['username'] for u in cliente.get('/api/panel/usuarios/').json()]
-        self.assertNotIn('super.demo', nombres)
+        self.assertEqual(self.crear(cliente, roles=['Administrador']).status_code, 400)
+        self.assertNotIn('Administrador', [r['valor'] for r in cliente.get('/api/panel/roles/').json()])
+
+    def test_configurar_admin_retira_privilegios_y_conserva_documentos(self):
+        from unittest.mock import patch
+        from io import StringIO
+        otro = Usuario.objects.create_superuser('anterior', 'anterior@example.com', CLAVE)
+        with patch('apps.core.management.commands.configurar_admin_mpd.getpass', side_effect=[CLAVE, CLAVE]):
+            call_command('configurar_admin_mpd', stdout=StringIO())
+        otro.refresh_from_db()
+        self.assertFalse(otro.is_superuser)
+        self.assertFalse(otro.is_staff)
+        self.assertTrue(otro.is_active)
+        self.assertEqual(Usuario.objects.filter(is_superuser=True).count(), 1)
+        self.assertTrue(Usuario.objects.get(username='ADMIN_MPD').check_password(CLAVE))
 
 
 class AreasYCatalogosTests(BaseUsuarios):
@@ -226,4 +281,4 @@ class AreasYCatalogosTests(BaseUsuarios):
 
     def test_roles_demo_se_puede_repetir(self):
         call_command('crear_roles_demo', verbosity=0)
-        self.assertEqual(Usuario.objects.filter(username__endswith='.demo').count(), 5)
+        self.assertEqual(Usuario.objects.filter(username__endswith='.demo').count(), 4)

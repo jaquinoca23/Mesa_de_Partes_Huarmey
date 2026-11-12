@@ -9,6 +9,7 @@ from apps.core.roles import ROLES
 
 from .models import Usuario
 from .serializers import UsuarioSerializer
+from .politica import SoloAdministradorUnico
 
 
 class UsuarioViewSet(AuditaCambiosMixin, viewsets.ModelViewSet):
@@ -18,7 +19,7 @@ class UsuarioViewSet(AuditaCambiosMixin, viewsets.ModelViewSet):
     """
 
     serializer_class = UsuarioSerializer
-    permission_classes = [PermisosModelo]
+    permission_classes = [SoloAdministradorUnico, PermisosModelo]
     queryset = Usuario.objects.select_related('area').prefetch_related('groups').order_by('username')
     pagination_class = None
     http_method_names = ['get', 'post', 'put', 'patch', 'head', 'options']
@@ -40,7 +41,7 @@ class UsuarioViewSet(AuditaCambiosMixin, viewsets.ModelViewSet):
 class RolesView(APIView):
     """GET /api/panel/roles/ — lista de roles disponibles para asignar."""
 
-    permission_classes = [requiere('usuarios.view_usuario')]
+    permission_classes = [SoloAdministradorUnico]
 
     def get(self, request):
-        return Response([{'valor': nombre, 'etiqueta': nombre} for nombre in ROLES])
+        return Response([{'valor': nombre, 'etiqueta': nombre} for nombre in ROLES if nombre != 'Administrador'])

@@ -40,6 +40,8 @@ class Command(BaseCommand):
         Usuario = get_user_model()
         nuevos = []
         for username, rol, nombre_area, nombres, apellidos, cargo in USUARIOS_DEMO:
+            if rol == 'Administrador' and Usuario.objects.filter(username='ADMIN_MPD', is_superuser=True).exists():
+                continue
             area = Area.objects.filter(nombre=nombre_area).first() if nombre_area else None
             if nombre_area and area is None:
                 self.stdout.write(self.style.WARNING(f'  Aviso: no existe el área "{nombre_area}". Ejecuta antes cargar_datos_ficticios.'))

@@ -1,93 +1,52 @@
-import { Link } from 'react-router-dom';
-import {
-  FilePlus2,
-  Search,
-  FileText,
-  Paperclip,
-  Receipt,
-  Info,
-} from 'lucide-react';
+﻿import { Link } from 'react-router-dom';
+import { ArrowRight, ArrowUpRight, FilePlus2, Search, FileText, Paperclip, Receipt, Info, Landmark, MonitorSmartphone, ChevronRight } from 'lucide-react';
+import '../../styles/home.css';
 
-// Pasos orientativos para el ciudadano (texto provisional, sin plazos oficiales).
 const PASOS = [
-  {
-    icono: FileText,
-    titulo: '1. Completa el formulario',
-    texto: 'Indica tus datos de contacto, el asunto y una descripción de tu solicitud.',
-  },
-  {
-    icono: Paperclip,
-    titulo: '2. Adjunta tus documentos',
-    texto: 'Puedes agregar archivos de respaldo. Los tipos y tamaños permitidos se definirán más adelante.',
-  },
-  {
-    icono: Receipt,
-    titulo: '3. Guarda tu cargo',
-    texto: 'Al registrarse correctamente recibirás un cargo de recepción con tu número de expediente.',
-  },
+  { icono: FileText, titulo: 'Completa el formulario', texto: 'Ingresa tus datos de contacto, el asunto y una descripción clara de tu solicitud.' },
+  { icono: Paperclip, titulo: 'Adjunta tus documentos', texto: 'Agrega tu documento principal y los archivos de respaldo de tu solicitud.' },
+  { icono: Receipt, titulo: 'Conserva tu cargo', texto: 'Al completar el registro, guarda el cargo de recepción y tu número de expediente.' },
 ];
 
 export default function HomePage() {
   return (
-    <>
-      <section className="hero">
-        <div className="container hero__inner">
-          <p className="hero__eyebrow">Portal ciudadano</p>
-          <h1 className="hero__title">Mesa de Partes Digital</h1>
-          <p className="hero__subtitle">
-            Presenta tus documentos a la Municipalidad Provincial de Huarmey y
-            consulta el estado de tus trámites desde cualquier dispositivo.
-          </p>
-
-          <div className="hero__actions">
-            <Link to="/presentar" className="btn btn--light btn--lg">
-              <FilePlus2 size={20} aria-hidden="true" />
-              Presentar un documento
+    <div className="citizen-home">
+      <section className="portal-hero" aria-labelledby="portal-title">
+        <div className="container portal-hero__inner">
+          <div className="portal-hero__copy">
+            <span className="portal-eyebrow"><span /> PORTAL DE ATENCIÓN CIUDADANA</span>
+            <h1 id="portal-title">Tus trámites,<br /><span>más cerca de ti.</span></h1>
+            <p>Presenta documentos y consulta tus expedientes en la Municipalidad Provincial de Huarmey desde un solo lugar.</p>
+            <a className="portal-guide-link" href="#como-funciona">Conoce cómo realizar tu trámite <ArrowRight size={17} aria-hidden="true" /></a>
+            <div className="portal-hero__signature"><Landmark size={19} aria-hidden="true" /><span>Municipalidad Provincial de Huarmey<br /><strong>Al servicio de nuestra ciudadanía</strong></span></div>
+          </div>
+          <div className="portal-services" aria-label="Servicios digitales">
+            <div className="portal-services__heading"><span>¿Qué necesitas hacer hoy?</span><MonitorSmartphone size={20} aria-hidden="true" /></div>
+            <Link className="service-card service-card--primary" to="/presentar">
+              <div className="service-card__top"><span className="service-card__icon"><FilePlus2 size={25} aria-hidden="true" /></span><ArrowUpRight size={23} aria-hidden="true" /></div>
+              <h2>Presentar un documento</h2>
+              <p>Registra una nueva solicitud y adjunta tus documentos.</p>
+              <span className="service-card__action">Iniciar trámite <ArrowRight size={17} aria-hidden="true" /></span>
             </Link>
-            <Link to="/consultar" className="btn btn--outline-light btn--lg">
-              <Search size={20} aria-hidden="true" />
-              Consultar un expediente
+            <Link className="service-card service-card--secondary" to="/consultar">
+              <span className="service-card__icon"><Search size={24} aria-hidden="true" /></span>
+              <div><h2>Consultar un expediente</h2><p>Revisa el estado de tu trámite.</p></div>
+              <ChevronRight size={22} aria-hidden="true" />
             </Link>
           </div>
         </div>
       </section>
-
-      <section className="section" aria-labelledby="titulo-pasos">
+      <section className="portal-steps" id="como-funciona" aria-labelledby="titulo-pasos">
         <div className="container">
-          <h2 id="titulo-pasos" className="section__title">
-            ¿Cómo funciona?
-          </h2>
-          <div className="grid grid--3">
-            {PASOS.map(({ icono: Icono, titulo, texto }) => (
-              <article key={titulo} className="card">
-                <div className="card__icon">
-                  <Icono size={24} aria-hidden="true" />
-                </div>
-                <h3 className="card__title">{titulo}</h3>
-                <p className="card__text">{texto}</p>
-              </article>
+          <div className="portal-section-heading"><div><span className="portal-label">GUÍA DEL CIUDADANO</span><h2 id="titulo-pasos">Tu solicitud, en tres pasos</h2></div><p>Prepara tus documentos y sigue estas indicaciones.</p></div>
+          <ol className="portal-step-grid">
+            {PASOS.map(({ icono: Icono, titulo, texto }, index) => (
+              <li key={titulo} className="portal-step"><div className="portal-step__top"><span className="portal-step__icon"><Icono size={23} aria-hidden="true" /></span><span className="portal-step__number" aria-hidden="true">0{index + 1}</span></div><h3>{titulo}</h3><p>{texto}</p></li>
             ))}
-          </div>
+          </ol>
+          <aside className="portal-notice" aria-labelledby="titulo-info"><span className="portal-notice__icon"><Info size={21} aria-hidden="true" /></span><div><h2 id="titulo-info">Información sobre horarios y plazos</h2><p>Los horarios de atención y el cómputo de plazos se publicarán cuando cuenten con la validación oficial de la municipalidad.</p></div><span className="portal-notice__tag">Pendiente de validación</span></aside>
         </div>
       </section>
-
-      <section className="section section--tight" aria-labelledby="titulo-info">
-        <div className="container">
-          <div className="notice" role="note">
-            <Info size={22} aria-hidden="true" className="notice__icon" />
-            <div>
-              <h2 id="titulo-info" className="notice__title">
-                Horarios y plazos
-              </h2>
-              <p>
-                La información sobre horarios de atención y cómputo de plazos se
-                publicará aquí únicamente cuando haya sido validada oficialmente
-                por la Municipalidad Provincial de Huarmey.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
+    </div>
   );
 }

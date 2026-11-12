@@ -44,8 +44,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 56px;
-  padding: 40px;
+  gap: 20px;
+  padding: 32px 40px;
   color: white;
   background: radial-gradient(circle at bottom left, #96394c, transparent 70%), #561520;
 }
@@ -56,6 +56,21 @@
 .login__presentacion h2 { margin: 16px 0; font-size: clamp(1.6rem, 3vw, 2rem); line-height: 1.25; letter-spacing: -0.03em; }
 .login__presentacion p { margin: 0; color: #ecd8dd; font-size: 0.9rem; line-height: 1.8; }
 .login__demo { align-self: flex-start; border: 1px solid #b57a87; border-radius: 30px; padding: 5px 12px; font-size: 0.72rem; color: #f5e6ea; }
+.login__mascota {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+.login__mascota img {
+  display: block;
+  width: auto;
+  height: 220px;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 28px rgba(32, 5, 13, 0.22);
+}
 .login__caja { min-width: 0; padding: 48px; display: flex; flex-direction: column; gap: 20px; justify-content: center; }
 .login__icono { display: inline-flex; padding: 12px; border-radius: 14px; background: var(--color-primary-soft); color: var(--color-primary); margin-bottom: 20px; }
 .login__encabezado h1 { font-size: 1.65rem; letter-spacing: -0.035em; }
@@ -80,6 +95,9 @@
   .login__panel { max-width: 460px; grid-template-columns: 1fr; border-radius: 16px; }
   .login__institucion { padding: 24px; gap: 20px; }
   .login__presentacion { display: none; }
+  .login__mascota { position: absolute; right: 24px; top: 20px; }
+  .login__mascota img { height: 100px; border-radius: 10px; }
+  .login__marca { padding-right: 78px; }
   .login__caja { padding: 28px 24px; }
   .login__icono { margin-bottom: 14px; }
 }

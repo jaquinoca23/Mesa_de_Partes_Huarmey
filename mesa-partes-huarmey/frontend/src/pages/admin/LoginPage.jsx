@@ -49,6 +49,14 @@ export default function LoginPage() {
             <h2>Una gestión más ágil.<br />Un mejor servicio.</h2>
             <p>Accede al espacio de trabajo de la Mesa de Partes Digital para gestionar la atención de documentos.</p>
           </div>
+          <div className="login__mascota">
+            <img
+              src="/images/MASCOTA.png"
+              alt="Mascota de la Mesa de Partes Digital de Huarmey"
+              width="1086"
+              height="1448"
+            />
+          </div>
           <span className="login__demo">Entorno de demostración</span>
         </aside>
       <form className="login__caja" onSubmit={enviar} noValidate aria-labelledby="login-title" aria-busy={enviando}>

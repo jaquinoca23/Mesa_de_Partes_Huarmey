@@ -9,7 +9,7 @@ const MENU = [
   { a: '/panel/expedientes', texto: 'Expedientes', icono: Inbox, permiso: 'expedientes.view_expediente' },
   { a: '/panel/reportes', texto: 'Reportes', icono: ClipboardList, permiso: 'expedientes.ver_reportes' },
   { a: '/panel/auditoria', texto: 'Auditoría', icono: ScrollText, permiso: 'auditoria.view_registroauditoria' },
-  { a: '/panel/usuarios', texto: 'Usuarios', icono: Users, permiso: 'usuarios.view_usuario' },
+  { a: '/panel/usuarios', texto: 'Usuarios del personal', icono: Users, permiso: 'usuarios.view_usuario' },
   { a: '/panel/areas', texto: 'Áreas', icono: Building2, permiso: 'organizacion.view_area' },
   { a: '/panel/tipos-documentales', texto: 'Tipos de documento', icono: FileText, permiso: 'catalogos.view_tipodocumental' },
   { a: '/panel/estados', texto: 'Estados', icono: ListChecks, permiso: 'catalogos.view_estadoexpediente' },
